@@ -17,5 +17,5 @@ pub(crate) async fn message_handler(stream: &mut tbot::UpdatesStream)
         eprintln!("Received another thingy");
     }
 
-    Ok(Action::AddElement("foo".to_string()))
+    Ok(Action::AddElement {name: "foo".to_string(), url: "bar".to_string() })
 }
