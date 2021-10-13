@@ -13,3 +13,4 @@ reqwest = "0.10"
 scraper = "0.12"
 lazy_static = "1.4"
 regex = "1"
+diesel = { version = "1.4", features = ["sqlite"] }

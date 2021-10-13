@@ -7,7 +7,7 @@ lazy_static::lazy_static! {
     static ref CLEAN_COMMA: Regex = Regex::new(r"[,.$ ]").unwrap();
 }
 
-pub async fn parse(url: String) -> Result<Product, reqwest::Error> {
+pub async fn parse(url: String) -> Result<Product, Box<dyn crate::errors::Error>> {
     let body = super::request_page_txt(&url).await?;
     let page = Html::parse_document(&body);
     let relevant_price = page.select(&SELECTOR).next().unwrap().inner_html();
