@@ -7,8 +7,21 @@ lazy_static::lazy_static! {
     static ref CLEAN_COMMA: Regex = Regex::new(r"[,.$ ]").unwrap();
 }
 
-pub async fn parse(url: String) -> Result<Product, reqwest::Error> {
-    let body = super::request_page_txt(&url).await?;
+pub async fn parse(url: String) -> Result<Product, Box<dyn crate::errors::Error>> {
+    let mut retries = 5;
+    let body = loop {
+        match super::request_page_txt(&url).await {
+            Ok(bd) => break bd,
+            Err(crate::errors::NetworkError::Timeout) => (),
+            Err(e) => return Err(e.into())
+        }
+        retries -= 1;
+        if retries <= 0 {
+            return Err(crate::errors::InternalError::TimeoutLimit.into())
+        }
+        tokio::time::sleep(tokio::time::Duration::from_secs(2)).await;
+    };
+
     let page = Html::parse_document(&body);
     let relevant_price = page.select(&SELECTOR).next().unwrap().inner_html();
     let relevant_price = CLEAN_COMMA.replace_all(&relevant_price, "");

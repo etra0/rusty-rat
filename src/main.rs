@@ -6,6 +6,8 @@ mod actions;
 
 #[tokio::main]
 async fn main() {
+    let mut products: Vec<rusty_rat::parsers::Product> = vec![];
+
     let token = env::var("TELEGRAM_BOT_TOKEN").expect("TELEGRAM_BOT_TOKEN not set");
     let api = tbot::Api::new(token);
 
